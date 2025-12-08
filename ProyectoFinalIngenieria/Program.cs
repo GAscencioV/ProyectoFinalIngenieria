@@ -55,12 +55,11 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mi API de Empleados", Version = "v1" });
 
-    // CAMBIO IMPORTANTE: Usamos 'Http' en lugar de 'ApiKey'
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.Http, // <--- Esto es clave
-        Scheme = "Bearer",              // <--- Esto le dice que use el prefijo Bearer
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "Ingrese su token JWT aquí (sin escribir 'Bearer')"
@@ -90,7 +89,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    c.RoutePrefix = string.Empty; // Para que abra en la raíz
+    c.RoutePrefix = string.Empty;
 });
 
 
@@ -104,7 +103,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate(); // Esto crea la DB y tablas si no existen
+    dbContext.Database.Migrate();
 }
 
 app.Run();
