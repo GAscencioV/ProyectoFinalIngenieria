@@ -14,32 +14,41 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (!string.IsNullOrEmpty(databaseUrl))
 {
+    Console.WriteLine("--> Detectada variable DATABASE_URL en el entorno.");
     try
     {
+        // Parseo manual robusto para Railway
         var databaseUri = new Uri(databaseUrl);
-        var userInfo = databaseUri.UserInfo.Split(':');
+        var userInfo = databaseUri.UserInfo.Split(new[] { ':' }, 2); // Limita el split a 2 partes por si la password tiene ':'
 
-        var npgsqlBuilder = new NpgsqlConnectionStringBuilder
+        var builderDb = new NpgsqlConnectionStringBuilder
         {
             Host = databaseUri.Host,
             Port = databaseUri.Port,
             Username = userInfo[0],
             Password = userInfo[1],
             Database = databaseUri.LocalPath.TrimStart('/'),
-            SslMode = SslMode.Disable 
+            SslMode = SslMode.Disable, // Railway usa red interna, solemos desactivar SSL o usar Prefer
+            Pooling = true
         };
 
-        connectionString = npgsqlBuilder.ToString();
+        connectionString = builderDb.ToString();
+        Console.WriteLine($"--> Conexión configurada exitosamente para Host: {builderDb.Host}");
     }
-    catch (Exception)
+    catch (Exception ex)
     {
-        connectionString = databaseUrl;
+        Console.WriteLine($"--> ERROR CRÍTICO parseando DATABASE_URL: {ex.Message}");
+        Console.WriteLine($"--> URL recibida (primeros 15 chars): {databaseUrl.Substring(0, Math.Min(15, databaseUrl.Length))}...");
+        throw; // Re-lanzamos el error para que no intente seguir con una config rota
     }
+}
+else
+{
+    Console.WriteLine("--> No se detectó DATABASE_URL, usando DefaultConnection.");
 }
 
 builder.Services.AddDbContext<AppDbContext>(options =>
