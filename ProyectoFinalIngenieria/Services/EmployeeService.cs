@@ -47,7 +47,6 @@ namespace ProyectoFinalIngenieria.Services
                 Name = createDto.Name,
                 LastName = createDto.LastName,
                 DNI = createDto.DNI,
-                DepartmentId = createDto.DepartmentId,
                 Email = createDto.Email,
                 BirthDate = createDto.BirthDate,
                 IsActive = true,
@@ -60,6 +59,11 @@ namespace ProyectoFinalIngenieria.Services
                     HiringDate = DateTime.UtcNow,
                 }
             };
+
+            if (Guid.TryParse(dto.DepartmentId, out Guid departmentIdParsed))
+            {
+                newEmployee.DepartmentId = departmentIdParsed;
+            }
 
             await _repository.AddAsync(newEmployee);
 
@@ -91,7 +95,7 @@ namespace ProyectoFinalIngenieria.Services
                 Name = e.Name,
                 LastName = e.LastName,
                 DNI = e.DNI,
-                DepartmentId = e.DepartmentId,
+                DepartmentId = e.DepartmentId.ToString(),
                 BirthDate = e.BirthDate,
                 Email = e.Email,
                 Phone = e.Phone,
