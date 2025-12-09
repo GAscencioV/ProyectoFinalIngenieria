@@ -14,6 +14,8 @@ namespace ProyectoFinalIngenieria.DTOs.Employee
         public bool IsActive { get; set; }
 
         public EmploymentDetailsResponseDto? EmploymentDetails { get; set; }
+        public string DepartmentId { get; set; }
+
         public DepartmentResponseDto? Department { get; set; }
     }
 }

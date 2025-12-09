@@ -60,7 +60,7 @@ namespace ProyectoFinalIngenieria.Services
                 }
             };
 
-            if (Guid.TryParse(dto.DepartmentId, out Guid departmentIdParsed))
+            if (Guid.TryParse(createDto.DepartmentId, out Guid departmentIdParsed))
             {
                 newEmployee.DepartmentId = departmentIdParsed;
             }
