@@ -38,10 +38,8 @@ public class AuthController : ControllerBase
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
 
-        // Validar si el usuario existe y si la contraseña es correcta
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            // Generar el token
             var token = GenerateJwtToken(user);
             return Ok(token);
         }
@@ -49,11 +47,9 @@ public class AuthController : ControllerBase
         return Unauthorized();
     }
 
-    // Método privado para generar el JWT
     private UserTokenDto GenerateJwtToken(IdentityUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        // Usar la misma clave que en Program.cs
         var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -63,7 +59,7 @@ public class AuthController : ControllerBase
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email)
             }),
-            Expires = DateTime.UtcNow.AddHours(2), // El token expira en 2 horas
+            Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 

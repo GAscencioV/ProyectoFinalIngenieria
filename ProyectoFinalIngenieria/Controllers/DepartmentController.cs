@@ -87,8 +87,6 @@ namespace ProyectoFinalIngenieria.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(string id)
         {
-            // Opcional: Verificar si existe antes de intentar borrar, 
-            // aunque el repositorio suele manejar esto o simplemente no hacer nada si no existe.
             var existing = await _service.GetDepartmentByIdAsync(id);
             if (existing == null) return NotFound();
 

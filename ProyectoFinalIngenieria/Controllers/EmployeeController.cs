@@ -45,7 +45,6 @@ namespace ProyectoFinalIngenieria.Controllers
         }
 
         // GET: api/employees/search/{dni}
-        // Usamos una sub-ruta para diferenciarlo de la búsqueda por ID
         [HttpGet("search/{dni}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -72,12 +71,10 @@ namespace ProyectoFinalIngenieria.Controllers
             {
                 var createdEmployee = await _service.CreateEmployeeAsync(createDto);
 
-                // Retorna 201 Created y agrega el header 'Location' apuntando al endpoint GetById
                 return CreatedAtAction(nameof(GetById), new { id = createdEmployee.Id }, createdEmployee);
             }
             catch (InvalidOperationException ex)
             {
-                // Capturamos la excepción de DNI duplicado lanzada por el servicio
                 return Conflict(new { message = ex.Message });
             }
             catch (Exception ex)
@@ -87,7 +84,6 @@ namespace ProyectoFinalIngenieria.Controllers
         }
 
         // PUT: api/employees/{id}/details
-        // Es un recurso anidado, ideal para actualizar solo una parte del empleado
         [HttpPut("{id}/details")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -100,7 +96,6 @@ namespace ProyectoFinalIngenieria.Controllers
             {
                 await _service.UpdateEmployeeDetailsAsync(id, detailsDto);
 
-                // 204 No Content es el estándar para actualizaciones exitosas que no devuelven datos
                 return NoContent();
             }
             catch (KeyNotFoundException)
@@ -115,8 +110,6 @@ namespace ProyectoFinalIngenieria.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(string id)
         {
-            // Opcional: Verificar si existe antes de intentar borrar, 
-            // aunque el repositorio suele manejar esto o simplemente no hacer nada si no existe.
             var existing = await _service.GetEmployeeByIdAsync(id);
             if (existing == null) return NotFound();
 
@@ -132,7 +125,7 @@ namespace ProyectoFinalIngenieria.Controllers
                              .Select(e => new
                              {
                                  Id = (int)e,
-                                 Name = EnumHelper.GetDescription(e) // Usa "Mensual" en vez de "Monthly"
+                                 Name = EnumHelper.GetDescription(e)
                              })
                              .ToList();
 
